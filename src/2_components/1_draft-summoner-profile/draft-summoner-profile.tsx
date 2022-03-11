@@ -5,35 +5,33 @@ import { Card, Typography } from '../../common/core/components';
 import { Client, isChampionIdValid, isRoleValid } from '../../common/league';
 
 // https://v4.mui.com/styles/api/#examples-2
-const useStyles = makeStyles(theme => ({
-    root: {
-
-    }
+const useStyles = makeStyles((theme) => ({
+  root: {},
 }));
 
 export interface Profile {
-    gamesPlayed: number;
-    winrate: number;
-    kda: number;
+  gamesPlayed: number;
+  winrate: number;
+  kda: number;
 }
 
 export interface DraftSummonerProfile {
-    summonerName: string;
-    gamesPlayed?: number;
-    winrate?: number;
+  summonerName: string;
+  gamesPlayed?: number;
+  winrate?: number;
 
-    tier?: Client.Tier;
-    division?: Client.Division;
+  tier?: Client.Tier;
+  division?: Client.Division;
 
-    role?: Client.Role;
-    roleProfile?: Profile;
+  role?: Client.Role;
+  roleProfile?: Profile;
 
-    championId?: Client.ChampionId;
-    championProfile?: Profile;
+  championId?: Client.ChampionId;
+  championProfile?: Profile;
 }
 
 export interface DraftSummonerProfileProps {
-    profile: DraftSummonerProfile;
+  profile: DraftSummonerProfile;
 }
 
 // TODO: Implement this component based on the Figma design. You should use the provided components: Card and Typography.
@@ -45,43 +43,69 @@ export interface DraftSummonerProfileProps {
 // - If winrate is >= 50, it's positive and displayed in our primary color, otherwise is negative and displayed in text primary
 
 export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
-    profile: {
-        summonerName,
-        winrate,
-        gamesPlayed,
+  profile: {
+    summonerName,
+    winrate,
+    gamesPlayed,
 
-        tier,
-        division,
+    tier,
+    division,
 
-        role,
-        roleProfile,
+    role,
+    roleProfile,
 
-        championId,
-        championProfile
-    }
+    championId,
+    championProfile,
+  },
 }) => {
-    const classes = useStyles();
+  const classes = useStyles();
 
-    const {
-        getChampionName,
-        getChampionImage,
-        getRoleName,
-        getTierDivisionName
-    } = useResource();
+  const {
+    getChampionName,
+    getChampionImage,
+    getRoleName,
+    getTierDivisionName,
+  } = useResource();
 
-    const hasRole = isRoleValid(role);
-    const hasChampion = isChampionIdValid(championId);
+  const hasRole = isRoleValid(role);
+  const hasChampion = isChampionIdValid(championId);
 
-    return (
-        <Card elevation='1' p={1}>
-            <Typography
-                variant='textMain' paragraph
-                color='textSecondary'
-                weight='medium'
-                mt={2.5} mb={2.5}
-            >
-                Not implemented.
+  return (
+    <Card
+      elevation='1'
+      p={1}
+      style={{ display: 'flex', flexDirection: 'row', padding: 8 }}
+    >
+      {championId && <img src={getChampionImage(championId)} alt='champion' />}
+      <Card width='80px'>
+        <Typography className='subtitle2'>{summonerName}</Typography>
+        <Typography>{winrate && `${winrate}% wr`}</Typography>
+        <Typography>{tier && division && `${tier}${division}`}</Typography>
+        <Typography>{gamesPlayed && `${gamesPlayed} games`}</Typography>
+        {!roleProfile && <Typography>No data</Typography>}
+      </Card>
+
+      <Card width='80px'>
+        <Typography>
+          {role && (championId ? `on Ekko` : `as ${getRoleName(role)}`)}
+        </Typography>
+        {roleProfile && (
+          <React.Fragment>
+            <Typography>
+              {championProfile
+                ? `${championProfile.winrate}% wr`
+                : `${roleProfile.winrate}% wr`}
             </Typography>
-        </Card>
-    );
-}
+            <Typography> {`${roleProfile.kda}kda`}</Typography>
+            <Typography>
+              {championProfile
+                ? `${championProfile.gamesPlayed} games`
+                : `${roleProfile.gamesPlayed} games`}
+            </Typography>
+          </React.Fragment>
+        )}
+        {role && !championProfile && <Typography>No data</Typography>}
+      </Card>
+    </Card>
+  );
+};
