@@ -69,42 +69,132 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
 
   const hasRole = isRoleValid(role);
   const hasChampion = isChampionIdValid(championId);
+  const hasData = winrate ? true : false;
+
+  const displayWinrate = () => {
+    if (championProfile) {
+      return championProfile.winrate;
+    } else {
+      return roleProfile.winrate;
+    }
+  };
 
   return (
     <Card
       elevation='1'
       p={1}
-      style={{ display: 'flex', flexDirection: 'row', padding: 8 }}
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}
     >
-      {championId && <img src={getChampionImage(championId)} alt='champion' />}
-      <Card width='80px'>
-        <Typography className='subtitle2'>{summonerName}</Typography>
-        <Typography>{winrate && `${winrate}% wr`}</Typography>
-        <Typography>{tier && division && `${tier}${division}`}</Typography>
-        <Typography>{gamesPlayed && `${gamesPlayed} games`}</Typography>
-        {!roleProfile && <Typography>No data</Typography>}
-      </Card>
+      {hasChampion && (
+        <img
+          src={hasChampion && getChampionImage(championId)}
+          alt='champion'
+          style={{ width: '64px', height: '64px' }}
+        />
+      )}
+      <Card style={{ display: 'flex' }}>
+        <Card>
+          <Typography
+            className='subtitle2'
+            variant='textSmall'
+            weight='medium'
+            color='textSecondary'
+          >
+            {summonerName}
+          </Typography>
 
-      <Card width='80px'>
-        <Typography>
-          {role && (championId ? `on Ekko` : `as ${getRoleName(role)}`)}
-        </Typography>
-        {roleProfile && (
-          <React.Fragment>
-            <Typography>
-              {championProfile
-                ? `${championProfile.winrate}% wr`
-                : `${roleProfile.winrate}% wr`}
+          {!hasData && (
+            <Typography
+              variant='textSmall'
+              weight='regular'
+              color='textSecondary'
+            >
+              No data
             </Typography>
-            <Typography> {`${roleProfile.kda}kda`}</Typography>
-            <Typography>
-              {championProfile
-                ? `${championProfile.gamesPlayed} games`
-                : `${roleProfile.gamesPlayed} games`}
+          )}
+
+          {hasData && (
+            <React.Fragment>
+              <Typography
+                variant='textSmall'
+                weight={winrate >= 50 ? 'medium' : 'regular'}
+                color={winrate >= 50 ? 'primary' : 'textPrimary'}
+              >
+                {`${winrate}% wr`}
+              </Typography>
+              <Typography
+                variant='textExtraSmall'
+                weight='regular'
+                color='textPrimary'
+              >
+                {getTierDivisionName(tier, division)}
+              </Typography>
+              <Typography
+                variant='textExtraSmall'
+                weight='regular'
+                color='textTertiary'
+              >
+                {`${gamesPlayed} games`}
+              </Typography>
+            </React.Fragment>
+          )}
+        </Card>
+
+        <Card>
+          {hasRole && (
+            <Typography
+              variant='textSmall'
+              weight='regular'
+              color='textSecondary'
+            >
+              {hasChampion
+                ? `on ${getChampionName(championId)}`
+                : `as ${getRoleName(role)}`}
             </Typography>
-          </React.Fragment>
-        )}
-        {role && !championProfile && <Typography>No data</Typography>}
+          )}
+
+          {hasRole && !hasData && (
+            <Typography
+              variant='textSmall'
+              weight='regular'
+              color='textSecondary'
+            >
+              No data
+            </Typography>
+          )}
+
+          {hasRole && hasData && (
+            <React.Fragment>
+              <Typography
+                variant='textSmall'
+                weight={displayWinrate() >= 50 ? 'medium' : 'regular'}
+                color={displayWinrate() >= 50 ? 'primary' : 'textPrimary'}
+              >
+                {`${displayWinrate()}% wr`}
+              </Typography>
+              <Typography
+                variant='textExtraSmall'
+                weight='regular'
+                color='textPrimary'
+              >
+                {`${roleProfile.kda}kda`}
+              </Typography>
+              <Typography
+                variant='textExtraSmall'
+                weight='regular'
+                color='textTertiary'
+              >
+                {hasChampion
+                  ? `${championProfile.gamesPlayed} games`
+                  : `${roleProfile.gamesPlayed} games`}
+              </Typography>
+            </React.Fragment>
+          )}
+        </Card>
       </Card>
     </Card>
   );
