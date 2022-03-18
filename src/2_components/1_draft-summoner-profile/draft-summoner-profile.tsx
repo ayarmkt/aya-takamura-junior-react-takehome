@@ -3,6 +3,7 @@ import React from 'react';
 import { useResource } from '../../1_hooks/resource.provider';
 import { Card, Typography } from '../../common/core/components';
 import { Client, isChampionIdValid, isRoleValid } from '../../common/league';
+import NoChampionImage from '../../assets/champion-not-selected.png';
 
 // https://v4.mui.com/styles/api/#examples-2
 const useStyles = makeStyles((theme) => ({
@@ -69,40 +70,57 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
 
   const hasRole = isRoleValid(role);
   const hasChampion = isChampionIdValid(championId);
-  const hasData = winrate ? true : false;
+  const hasData = gamesPlayed ? true : false;
+
+  const championSrc = hasChampion
+    ? getChampionImage(championId)
+    : NoChampionImage;
 
   const displayWinrate = () => {
     if (championProfile) {
-      return championProfile.winrate;
+      return +championProfile.winrate.toFixed(1);
     } else {
-      return roleProfile.winrate;
+      return +roleProfile.winrate.toFixed(1);
     }
   };
 
   return (
     <Card
-      elevation='1'
+      elevation='5'
       p={1}
       style={{
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
       }}
     >
-      {hasChampion && (
-        <img
-          src={hasChampion && getChampionImage(championId)}
-          alt='champion'
-          style={{ width: '64px', height: '64px' }}
-        />
-      )}
-      <Card style={{ display: 'flex' }}>
-        <Card>
+      <img
+        src={championSrc}
+        alt='champion'
+        style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '3px',
+          alignSelf: 'center',
+        }}
+      />
+
+      <Card
+        elevationOpacity={0}
+        p={0}
+        style={{
+          display: 'flex',
+          marginLeft: '8px',
+        }}
+      >
+        <Card width={'88px'} elevationOpacity={0} p={0}>
           <Typography
             className='subtitle2'
             variant='textSmall'
             weight='medium'
             color='textSecondary'
+            mt={0.5}
+            mb={1}
           >
             {summonerName}
           </Typography>
@@ -123,13 +141,15 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
                 variant='textSmall'
                 weight={winrate >= 50 ? 'medium' : 'regular'}
                 color={winrate >= 50 ? 'primary' : 'textPrimary'}
+                mb={1}
               >
-                {`${winrate}% wr`}
+                {`${+winrate.toFixed(1)}% wr`}
               </Typography>
               <Typography
                 variant='textExtraSmall'
                 weight='regular'
                 color='textPrimary'
+                mb={1}
               >
                 {getTierDivisionName(tier, division)}
               </Typography>
@@ -137,6 +157,7 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
                 variant='textExtraSmall'
                 weight='regular'
                 color='textTertiary'
+                mb={0.5}
               >
                 {`${gamesPlayed} games`}
               </Typography>
@@ -144,12 +165,14 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
           )}
         </Card>
 
-        <Card>
+        <Card width={'88px'} elevationOpacity={0} p={0}>
           {hasRole && (
             <Typography
               variant='textSmall'
               weight='regular'
               color='textSecondary'
+              mt={0.5}
+              mb={1}
             >
               {hasChampion
                 ? `on ${getChampionName(championId)}`
@@ -173,6 +196,7 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
                 variant='textSmall'
                 weight={displayWinrate() >= 50 ? 'medium' : 'regular'}
                 color={displayWinrate() >= 50 ? 'primary' : 'textPrimary'}
+                mb={1}
               >
                 {`${displayWinrate()}% wr`}
               </Typography>
@@ -180,13 +204,15 @@ export const DraftSummonerProfile: React.FC<DraftSummonerProfileProps> = ({
                 variant='textExtraSmall'
                 weight='regular'
                 color='textPrimary'
+                mb={1}
               >
-                {`${roleProfile.kda}kda`}
+                {`${+roleProfile.kda.toFixed(1)}kda`}
               </Typography>
               <Typography
                 variant='textExtraSmall'
                 weight='regular'
                 color='textTertiary'
+                mb={0.5}
               >
                 {hasChampion
                   ? `${championProfile.gamesPlayed} games`

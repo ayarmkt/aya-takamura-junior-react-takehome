@@ -22,14 +22,22 @@ export const DraftSummonerProfiles: React.FC<DraftSummonerProfilesProps> = ({
 }) => {
   const classes = useStyles();
 
-  const displayProfile = (profile: DraftSummonerProfile): JSX.Element => {
-    return <DraftSummonerProfile profile={profile} />;
-  };
-
   return (
-    <Card elevation='0' p={1}>
+    <Card
+      elevation='0'
+      p={1}
+      style={{
+        display: 'grid',
+        gridTemplateRows: `${profiles.length}`,
+        gridTemplateColumns: '1',
+        gap: '8px 0',
+      }}
+    >
       {/* <pre>{JSON.stringify(profiles, undefined, 4)}</pre> */}
-      {profiles.map((profile) => displayProfile(profile))}
+
+      {profiles.map((profile) => (
+        <DraftSummonerProfile profile={profile} />
+      ))}
     </Card>
   );
 };
